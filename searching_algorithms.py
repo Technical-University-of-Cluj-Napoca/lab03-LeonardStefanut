@@ -61,7 +61,7 @@ def bfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
 
 def dfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     """
-    Depdth-First Search (DFS) Algorithm.
+    Depth-First Search (DFS) Algorithm.
     Args:
         draw (callable): A function to call to update the Pygame window.
         grid (Grid): The Grid object containing the spots.
@@ -70,7 +70,41 @@ def dfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     Returns:
         bool: True if a path is found, False otherwise.
     """
-    pass
+    if not start or not end:
+        return False
+        
+    stack = []
+    stack.append(start)
+    visited = {start}
+    came_from: dict[Spot, Spot] = {}
+
+    while stack:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+
+        current = stack.pop()
+
+        if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbor in current.neighbors:
+            if neighbor not in visited and not neighbor.is_barrier():
+                visited.add(neighbor)
+                came_from[neighbor] = current
+                stack.append(neighbor)
+                neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+            
+    return False
 
 def h_manhattan_distance(p1: tuple[int, int], p2: tuple[int, int]) -> float:
     """
