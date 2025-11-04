@@ -4,6 +4,14 @@ from queue import PriorityQueue
 from grid import Grid
 from spot import Spot
 
+def reconstruct_path(came_from: dict[Spot, Spot], current: Spot, draw: callable) -> None:
+ 
+    while current in came_from:
+        current = came_from[current]
+        if not current.is_start():
+            current.make_path()
+        draw()
+
 def bfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     """
     Breadth-First Search (BFS) Algorithm.
@@ -15,7 +23,41 @@ def bfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     Returns:
         bool: True if a path is found, False otherwise.
     """
-    pass
+    if not start or not end:
+        return False
+
+    queue = deque()
+    queue.append(start)
+    visited = {start}
+    came_from: dict[Spot, Spot] = {}
+
+    while queue:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+
+        current = queue.popleft()
+
+        if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbor in current.neighbors:
+            if neighbor not in visited and not neighbor.is_barrier():
+                visited.add(neighbor)
+                came_from[neighbor] = current
+                queue.append(neighbor)
+                neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+            
+    return False
 
 def dfs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     """
