@@ -56,14 +56,13 @@ class Grid:
         Returns:
             None
         """
-        self.win.fill(COLORS['WHITE'])  # fill the window with white color
-
+        #pygame.draw.rect(self.win, COLORS['WHITE'], (0, 0, self.width, self.height))
         for row in self.grid:
             for spot in row:
-                spot.draw(self.win)   # draw each spot
+                if spot.color != COLORS['WHITE']:
+                    spot.draw(self.win)    # draw each spot
 
-        self.draw_grid_lines()        # draw the grid lines          
-        pygame.display.update()       # update the display
+       # self.draw_grid_lines()        # draw the grid lines          
 
     def get_clicked_pos(self, pos: tuple[int, int]) -> tuple[int, int]:
         """
