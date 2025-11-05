@@ -69,7 +69,9 @@ if __name__ == "__main__":
                     #bfs(lambda: grid.draw(), grid, start, end)
                     #dfs(lambda: grid.draw(), grid, start, end)
                     #astar(lambda: grid.draw(), grid, start, end)
-                    ucs(lambda: grid.draw(), grid, start, end)
+                    #ucs(lambda: grid.draw(), grid, start, end)
+                    #greedy_search(lambda: grid.draw(), grid, start, end)
+                    dls(lambda: grid.draw(), grid, start, end)
                     # ... and the others?
                     started = False
 

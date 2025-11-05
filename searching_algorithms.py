@@ -247,6 +247,89 @@ def ucs(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
             current.make_closed()
 
     return False
+
+def greedy_search(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
+    if not start or not end:
+        return False
+
+    count = 0
+    open_set = PriorityQueue()
+    
+    h_score = h_manhattan_distance(start.get_position(), end.get_position())
+    open_set.put((h_score, count, start)) 
+
+    came_from: dict[Spot, Spot] = {}
+    visited = {start}
+
+    while not open_set.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+
+        current: Spot = open_set.get()[2]
+
+        if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbor in current.neighbors:
+            if neighbor not in visited:
+                came_from[neighbor] = current
+                visited.add(neighbor)
+                h_score = h_manhattan_distance(neighbor.get_position(), end.get_position())
+                count += 1
+                open_set.put((h_score, count, neighbor))
+                neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+
+    return False
+
+
+def dls(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
+    LIMIT = 100
+    
+    if not start or not end:
+        return False
+        
+    stack = [(start, 0)]
+    visited = {start}
+    came_from: dict[Spot, Spot] = {}
+
+    while stack:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
+
+        current, depth = stack.pop()
+
+        if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        if depth < LIMIT:
+            for neighbor in current.neighbors:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    came_from[neighbor] = current
+                    stack.append((neighbor, depth + 1))
+                    neighbor.make_open()
+
+        draw()
+
+        if current != start:
+            current.make_closed()
+            
+    return False
 # and the others algorithms...
 # ▢ Depth-Limited Search (DLS)
 # ▢ Uninformed Cost Search (UCS)
