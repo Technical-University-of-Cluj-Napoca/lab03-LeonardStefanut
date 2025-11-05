@@ -292,8 +292,7 @@ def greedy_search(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
     return False
 
 
-def dls(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
-    LIMIT = 100
+def dls(draw: callable, grid: Grid, start: Spot, end: Spot,limit:int) -> bool:
     
     if not start or not end:
         return False
@@ -316,7 +315,7 @@ def dls(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
             start.make_start()
             return True
 
-        if depth < LIMIT:
+        if depth < limit:
             for neighbor in current.neighbors:
                 if neighbor not in visited:
                     visited.add(neighbor)
@@ -330,6 +329,92 @@ def dls(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
             current.make_closed()
             
     return False
+
+def ids(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
+    if not start or not end:
+        return False
+    
+    max_depth = grid.rows * grid.cols
+
+    for i in range(max_depth):
+        for row in grid.grid:
+            for spot in row:
+                if not spot.is_start() and not spot.is_end() and not spot.is_barrier():
+                    spot.reset()
+
+        if dls(draw, grid, start, end, i):
+            return True
+            
+    return False
+
+def search(draw: callable, path: list[Spot], g_score: float, limit: float, end: Spot, visited_nodes: set[Spot]) -> tuple[bool, float]:
+    current_node = path[-1]
+    f_score = g_score + h_manhattan_distance(current_node.get_position(), end.get_position())
+
+    if f_score > limit:
+        return False, f_score
+
+    if current_node == end:
+        return True, limit
+
+    min_val = float("inf")
+
+    for neighbor in current_node.neighbors:
+        if neighbor not in path:
+            path.append(neighbor)
+            visited_nodes.add(neighbor)
+            
+            if not neighbor.is_end():
+                neighbor.make_open()
+            draw()
+
+            found, new_limit = search(draw, path, g_score + 1, limit, end, visited_nodes)
+
+            if found:
+                return True, new_limit
+
+            if new_limit < min_val:
+                min_val = new_limit
+
+            path.pop()
+            if not neighbor.is_start() and not neighbor.is_end():
+                neighbor.make_closed()
+            draw()
+
+    return False, min_val
+
+def ida_star(draw: callable, grid: Grid, start: Spot, end: Spot) -> bool:
+    if not start or not end:
+        return False
+
+    limit = h_manhattan_distance(start.get_position(), end.get_position())
+    path = [start]
+    visited_nodes = {start}
+
+    while True:
+        found, new_limit = search(draw, path, 0, limit, end, visited_nodes)
+
+        if found:
+            for node in path:
+                if not node.is_start() and not node.is_end():
+                    node.make_path()
+            end.make_end()
+            start.make_start()
+            draw()
+            return True
+
+        if new_limit == float("inf"):
+            return False
+
+        limit = new_limit
+        
+        for row in grid.grid:
+            for spot in row:
+                if not spot.is_start() and not spot.is_end() and not spot.is_barrier():
+                    spot.reset()
+        start.make_start()
+        end.make_end()
+        draw()
 # and the others algorithms...
 # ▢ Depth-Limited Search (DLS)
 # ▢ Uninformed Cost Search (UCS)

@@ -1,20 +1,24 @@
 import pygame
 
-# some global constants
 WIDTH = 800
 HEIGHT = 800
+PANEL_WIDTH = 200
+WINDOW_WIDTH = WIDTH + PANEL_WIDTH
+WINDOW_HEIGHT = HEIGHT
 
-# colors.
-# if you find it more suitable, change this dictionary to standalone constants like: RED = (255, 0, 0)
 COLORS = {
-    'RED': (255, 0, 0),           # closed nodes
-    'GREEN': (0, 255, 0),         # open nodes
-    'BLUE': (0, 0, 255),          # start node
-    'YELLOW': (255, 255, 0),      # end node
-    'WHITE': (255, 255, 255),     # unvisited nodes
-    'BLACK': (0, 0, 0),           # barrier
-    'PURPLE': (128, 0, 128),      # path
-    'ORANGE': (255, 165 ,0),      # nodes being considered
-    'GREY': (128, 128, 128),      # grid lines
-    'TURQUOISE': (64, 224, 208)   # neighbor nodes
+    'RED': (255, 0, 0),
+    'GREEN': (0, 255, 0),
+    'BLUE': (0, 0, 255),
+    'YELLOW': (255, 255, 0),
+    'WHITE': (255, 255, 255),
+    'BLACK': (0, 0, 0),
+    'PURPLE': (128, 0, 128),
+    'ORANGE': (255, 165 ,0),
+    'GREY': (128, 128, 128),
+    'TURQUOISE': (64, 224, 208),
+    'BUTTON_COLOR': (70, 130, 180),
+    'BUTTON_HOVER': (100, 149, 237),
+    'TEXT_COLOR': (255, 255, 255),
+    'PANEL_COLOR': (50, 50, 50)
 }
